@@ -121,14 +121,28 @@ if not df.empty:
 st.sidebar.markdown("---")
 st.sidebar.markdown("### Autor")
 st.sidebar.info("**Adam Woźniak**")
-#Kolumny, żeby przyciski były obok siebie
-col_git, col_lin, col_ig = st.sidebar.columns(3)
-with col_git:
-    st.link_button("GitHub", "www.github.com/wozniakadam71")
-with col_lin:
-    st.link_button("LinkedIn", "www.linkedin.com/in/adam-woźniak-b59473380")
-with col_ig:
-    st.link_button("Instagram", "www.instagram.com/adam._woz")
+
+github_url = "https://github.com/wozniakadam71"
+linkedin_url = "https://www.linkedin.com/in/adam-woźniak-b59473380"
+instagram_url = "https://www.instagram.com/adam._woz"
+
+# Kod HTML dla ikon
+st.sidebar.markdown(
+    f"""
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{github_url}" target="_blank">
+            <img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white" height="25" />
+        </a>
+        <a href="{linkedin_url}" target="_blank">
+            <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white" height="25" />
+        </a>
+        <a href="{instagram_url}" target="_blank">
+            <img src="https://img.shields.io/badge/Instagram-E4405F?style=flat&logo=instagram&logoColor=white" height="25" />
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 #Główny Panel
 st.markdown(f"### 🏢 {ticker_info.get('name', ticker)}")
