@@ -122,11 +122,13 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("### Autor")
 st.sidebar.info("**Adam Woźniak**")
 #Kolumny, żeby przyciski były obok siebie
-col_git, col_lin = st.sidebar.columns(2)
+col_git, col_lin, col_ig = st.sidebar.columns(3)
 with col_git:
-    st.link_button("GitHub", "https://github.com/wozniakadam71")
+    st.link_button("GitHub", "www.github.com/wozniakadam71")
 with col_lin:
-    st.link_button("💼 LinkedIn", "www.linkedin.com/in/adam-woźniak-b59473380")
+    st.link_button("LinkedIn", "www.linkedin.com/in/adam-woźniak-b59473380")
+with col_ig:
+    st.link_button("Instagram", "www.instagram.com/adam._woz")
 
 #Główny Panel
 st.markdown(f"### 🏢 {ticker_info.get('name', ticker)}")
