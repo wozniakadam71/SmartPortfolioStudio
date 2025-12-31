@@ -1,0 +1,37 @@
+ticker,name
+MSFT,Microsoft
+GOOGL,Alphabet
+PKN.WA,PKN Orlen
+CDR.WA,CD Projekt
+PKO.WA,PKO BP
+KGH.WA,KGHM
+LPP.WA,LPP
+AAPL,Apple Inc.
+MSFT,Microsoft Corporation
+GOOGL,Alphabet Inc.
+AMZN,Amazon.com Inc.
+TSLA,Tesla Inc.
+FB,Meta Platforms Inc.
+NFLX,Netflix Inc.
+NVDA,NVIDIA Corporation
+INTC,Intel Corporation
+AMD,Advanced Micro Devices
+ORCL,Oracle Corporation
+IBM,International Business Machines
+SAP,SAP SE
+BABA,Alibaba Group
+SONY,Sony Group Corporation
+DIS,The Walt Disney Company
+KO,The Coca-Cola Company
+PEP,PepsiCo Inc.
+MCD,McDonald's Corporation
+V, Visa Inc.
+MA, Mastercard Inc.
+JPM,JPMorgan Chase & Co.
+BAC,Bank of America Corporation
+WMT,Walmart Inc.
+HD,The Home Depot Inc.
+PG,Procter & Gamble Co.
+NKE,Nike Inc.
+ADBE,Adobe Inc.
+XTB.WA,XTB S.A.
