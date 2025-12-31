@@ -16,18 +16,18 @@ class StockData:
         Cache wygasa po 24 godzinach.
         """
         try:
-            # Pobieranie danych z Yahoo Finance
+            #Pobieranie danych z Yahoo Finance
             df = yf.download(ticker, period=period, interval=interval, progress=False)
 
             if df.empty:
                 return pd.DataFrame()
 
-            # --- CZYSZCZENIE DANYCH ---
-            # 1. Naprawa nazw kolumn (czasem yfinance zwraca dziwne nagłówki w nowych wersjach)
+            #CZYSZCZENIE DANYCH
+            #Naprawa nazw kolumn (czasem yfinance zwraca dziwne nagłówki w nowych wersjach)
             if isinstance(df.columns, pd.MultiIndex):
-                # Spłaszczamy nagłówki jeśli są wielopoziomowe
+                #Spłaszczanie nagłówków jeśli są wielopoziomowe
                 df.columns = df.columns.get_level_values(0)
-            # 2. Usuwanie strefy czasowej z daty (ważne dla wykresów Plotly/Excel)
+            #Usuwanie strefy czasowej z daty (dla wykresów)
             if df.index.tzinfo is not None:
                 df.index = df.index.tz_localize(None)
 
@@ -45,7 +45,7 @@ class StockData:
             t = yf.Ticker(ticker)
             info = t.info
 
-            # Pobieramy dane z bezpiecznymi wartościami domyślnymi (gdyby ich brakowało)
+            #Pobieranie danych z bezpiecznymi wartościami domyślnymi
             return {
                 "name": info.get("shortName", ticker),
                 "currency": info.get("currency", "USD"),
@@ -55,10 +55,10 @@ class StockData:
                 "market_cap": info.get("marketCap", None),
                 "pe_ratio": info.get("trailingPE", None),  # Cena do Zysku (historyczna)
                 "forward_pe": info.get("forwardPE", None),  # Cena do Zysku (prognoza)
-                "dividend_yield": info.get("dividendYield", None),  # Stopa dywidendy (np. 0.05 = 5%)
+                "dividend_yield": info.get("dividendYield", None),  # Stopa dywidendy
                 "summary": info.get("longBusinessSummary", None)
             }
         except Exception as e:
-            # W razie błędu zwracamy podstawy, żeby aplikacja się nie wysypała
+            #Obsługa błędnego tickera
             print(f"Błąd pobierania info dla {ticker}: {e}")
             return {"currency": "?", "name": ticker}

@@ -6,21 +6,21 @@ class SimpleBacktester:
         self.initial_capital = initial_capital
 
     def run_strategy(self):
-        # 1. Sprawdź czy mamy dane
+        #Sprawdzenie posiadania danych
         if self.data is None or self.data.empty:
             return None
 
-        # 2. Sprawdź czy mamy wystarczająco dużo danych (minimum 2 punkty: start i koniec)
+        #Test wystarczająco dużo danych
         if len(self.data) < 2:
             print("⚠️ Za mało danych do obliczenia zwrotu (wymagane min. 2 punkty w czasie).")
             return None
 
-        # Cena zakupu (pierwszy dostępny dzień)
+        #Cena zakupu (pierwszy dostępny dzień)
         start_price = self.data["Close"].iloc[0]
-        # Cena sprzedaży (ostatni dostępny dzień)
+        #Cena sprzedaży (ostatni dostępny dzień)
         end_price = self.data["Close"].iloc[-1]
 
-        # Zabezpieczenie przed zerową ceną (choć mało prawdopodobne na giełdzie)
+        #Zabezpieczenie przed zerową ceną
         if start_price == 0:
             return None
 

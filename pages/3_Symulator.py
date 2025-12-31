@@ -12,18 +12,18 @@ Ta symulacja generuje **potencjalne ścieżki ceny** w przyszłości, bazując n
 To nie jest wyrocznia, ale matematyczne oszacowanie prawdopodobieństwa.
 """)
 
-# --- Panel boczny ---
+#Panel boczny
 st.sidebar.header("Parametry Symulacji")
 
-# Wybór spółki
+#Wybór spółki
 default_ticker = "BTC-USD"
 ticker = st.sidebar.text_input("Wpisz symbol (np. AAPL, BTC-USD):", value=default_ticker).upper().strip()
 
-# Parametry symulacji
+#Parametry symulacji
 days_to_predict = st.sidebar.slider("Horyzont czasowy (dni w przyszłość):", min_value=30, max_value=365, value=90)
 num_simulations = st.sidebar.slider("Liczba symulacji (scenariuszy):", min_value=10, max_value=500, value=200)
 
-# Pobieranie danych historycznych
+#Pobieranie danych historycznych
 fetcher = StockData()
 hist_data = fetcher.get_data(ticker, period="1y", interval="1d")
 
@@ -31,36 +31,34 @@ if hist_data.empty:
     st.error(f"Nie udało się pobrać danych dla {ticker}.")
     st.stop()
 
-# --- Matematyka ---
-# 1. Obliczamy dzienne zwroty logarytmiczne
+#Matematyka
+#Dzienne zwroty logarytmiczne
 log_returns = np.log(1 + hist_data["Close"].pct_change())
 
-# 2. Wyciągamy średnią (u) i wariancję (var)
+#Średnia (u) i wariancja (var)
 u = log_returns.mean()
 var = log_returns.var()
 
-# 3. Dryf (Drift)
+#Dryf (Drift)
 drift = u - (0.5 * var)
 
-# 4. Zmienna losowa (Odchylenie standardowe)
+#Zmienna losowa (Odchylenie standardowe)
 stdev = log_returns.std()
 
-# Przygotowanie tablicy na wyniki
+#Przygotowanie tablicy na wyniki
 simulation_df = pd.DataFrame()
 
-# Ostatnia znana cena
+#Ostatnia znana cena
 last_price = hist_data["Close"].iloc[-1]
 
 if st.button("Uruchom Symulację 🚀"):
 
     with st.spinner("Generowanie alternatywnych wszechświatów..."):
-        # Usunięto .values, bo stdev jest liczbą, a nie serią
-        daily_volatility = stdev * np.random.normal(size=(days_to_predict, num_simulations))
 
-        # Usunięto .values przy drift
+        daily_volatility = stdev * np.random.normal(size=(days_to_predict, num_simulations))
         daily_returns = np.exp(drift + daily_volatility)
 
-        # Tworzymy ścieżki cen
+        #Ścieżki cen
         price_paths = np.zeros((days_to_predict + 1, num_simulations))
         price_paths[0] = last_price
 
@@ -69,10 +67,10 @@ if st.button("Uruchom Symulację 🚀"):
 
         simulation_df = pd.DataFrame(price_paths)
 
-    # --- Wykres ---
+    #Wykres
     fig = go.Figure()
 
-    # Rysujemy każdą ścieżkę (limit do 100 dla wydajności)
+    #Rysowanie każdeh ścieżki
     limit_lines = min(num_simulations, 100)
 
     for i in range(limit_lines):
@@ -84,7 +82,7 @@ if st.button("Uruchom Symulację 🚀"):
             hoverinfo='skip'
         ))
 
-    # Dodajemy linię średnią
+    #Linia średnia
     mean_path = simulation_df.mean(axis=1)
     fig.add_trace(go.Scatter(
         y=mean_path,
@@ -93,10 +91,10 @@ if st.button("Uruchom Symulację 🚀"):
         line=dict(width=4, color='white')
     ))
 
-    # Ostatnia cena historyczna
+    #Ostatnia cena historyczna
     fig.add_annotation(x=0, y=last_price, text=f"Start: {last_price:.2f}", showarrow=True, arrowhead=1)
 
-    # Końcowa średnia cena
+    #Końcowa średnia cena
     final_mean = mean_path.iloc[-1]
     fig.add_annotation(x=days_to_predict, y=final_mean, text=f"Średnia: {final_mean:.2f}", showarrow=True, arrowhead=1,
                        ax=20)
@@ -110,7 +108,7 @@ if st.button("Uruchom Symulację 🚀"):
 
     st.plotly_chart(fig, use_container_width=True)
 
-    # --- Podsumowanie statystyczne ---
+    #Podsumowanie statystyczne
     st.subheader("📊 Analiza Ryzyka")
 
     final_prices = simulation_df.iloc[-1]

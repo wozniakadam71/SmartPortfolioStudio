@@ -11,7 +11,7 @@ Sprawdź, czy Twój portfel jest dobrze zdywersyfikowany.
 Wpisz swoje spółki w panelu bocznym lub wybierz z listy popularnych.
 """)
 
-# --- Panel Boczny: Konfiguracja ---
+# Panel Boczny: Konfiguracja
 st.sidebar.header("Ustawienia Macierzy")
 
 # 1. Lista popularnych (dla wygody)
@@ -27,7 +27,7 @@ selected_from_list = st.sidebar.multiselect(
     default=["BTC-USD", "SPY", "GLD"]  # Domyślny startowy zestaw
 )
 
-# 2. Pole na własne spółki (kluczowa zmiana)
+# 2. Pole na własne spółki
 st.sidebar.markdown("---")
 manual_tickers_input = st.sidebar.text_area(
     "Lub wpisz własne (oddzielone przecinkiem):",
@@ -35,13 +35,13 @@ manual_tickers_input = st.sidebar.text_area(
     help="Wpisz tutaj dowolne symbole z Yahoo Finance oddzielone przecinkami."
 )
 
-# --- Logika łączenia list ---
-# Rozbijamy wpisany tekst na listę, usuwamy spacje i zamieniamy na wielkie litery
+# Logika łączenia list
+# Rozbijanie wpisanego tekstu na listę, usuwamy spacje i zamieniamy na wielkie litery
 manual_tickers = []
 if manual_tickers_input:
     manual_tickers = [x.strip().upper() for x in manual_tickers_input.split(",") if x.strip()]
 
-# Łączymy obie listy i usuwamy duplikaty (set)
+# Łączenie obu list i usuwanie duplikatów (set)
 final_ticker_list = list(set(selected_from_list + manual_tickers))
 
 st.sidebar.markdown(f"**Wybrano łącznie:** {len(final_ticker_list)} aktywów")
@@ -58,7 +58,7 @@ if len(final_ticker_list) < 2:
     st.info("👈 Wybierz lub wpisz przynajmniej dwie spółki w panelu bocznym, aby zobaczyć korelację.")
     st.stop()
 
-# --- Pobieranie i Przetwarzanie Danych ---
+# Pobieranie i Przetwarzanie Danych
 if st.button("Oblicz Korelację 🚀"):
     fetcher = StockData()
     combined_df = pd.DataFrame()
@@ -83,10 +83,10 @@ if st.button("Oblicz Korelację 🚀"):
     if combined_df.empty:
         st.error("Nie udało się pobrać wystarczających danych. Sprawdź, czy wpisane symbole są poprawne.")
     else:
-        # --- Obliczanie Korelacji ---
+        #Obliczanie Korelacji
         corr_matrix = combined_df.corr()
 
-        # --- Wizualizacja (Heatmapa Plotly) ---
+        #Wizualizacja (Plotly)
         fig = px.imshow(
             corr_matrix,
             text_auto=".2f",
@@ -104,12 +104,12 @@ if st.button("Oblicz Korelację 🚀"):
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # --- Inteligentne Wnioski ---
+        #Wnioski
         st.subheader("💡 Wnioski:")
 
-        # Szukamy najsilniejszej pary
+        #Najsilniejsza para
         c = corr_matrix.abs()
-        # Wypełniamy przekątną zerami, żeby nie znajdowało korelacji 1.0 samej ze sobą
+        #Wypełnienie przekątnej zerami, żeby nie znajdowało korelacji 1.0 samej ze sobą
         for col in c.columns:
             c.loc[col, col] = 0
 
@@ -118,7 +118,7 @@ if st.button("Oblicz Korelację 🚀"):
 
         if not so.empty:
             top_pair = so.index[0]
-            top_val = corr_matrix.loc[top_pair[0], top_pair[1]]  # Pobieramy oryginalną wartość (+/-)
+            top_val = corr_matrix.loc[top_pair[0], top_pair[1]]  #Pobieranie oryginalnej wartości (+/-)
 
             st.info(f"Najsilniejsze powiązanie: **{top_pair[0]}** i **{top_pair[1]}** (Korelacja: {top_val:.2f}).")
 

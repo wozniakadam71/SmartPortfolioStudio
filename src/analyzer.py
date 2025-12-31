@@ -38,7 +38,7 @@ class StockAnalyzer:
         self.rsi = self.df['RSI']
         return self.df['RSI']
 
-    # --- [NOWOŚĆ] Metryki Ryzyka ---
+    # --- Metryki Ryzyka ---
     def get_risk_metrics(self):
         """
         Oblicza Sharpe Ratio i Max Drawdown.
@@ -46,8 +46,8 @@ class StockAnalyzer:
         if 'Returns' not in self.df.columns:
             self.calculate_returns()
 
-        # 1. Sharpe Ratio (uproszczony, zakładając stopę wolną od ryzyka = 0)
-        # Średni zwrot dzienny / Odchylenie standardowe * Pierwiastek z 252 (dni sesyjne w roku)
+        #Sharpe Ratio (uproszczony, zakładając stopę wolną od ryzyka = 0)
+        #Średni zwrot dzienny / Odchylenie standardowe * Pierwiastek z 252 (dni sesyjne w roku)
         mean_return = self.df['Returns'].mean()
         std_return = self.df['Returns'].std()
 
@@ -56,14 +56,14 @@ class StockAnalyzer:
         else:
             sharpe_ratio = (mean_return / std_return) * np.sqrt(252)
 
-        # 2. Max Drawdown (Maksymalne obsunięcie kapitału)
-        # Obliczamy skumulowany zwrot
+        #Max Drawdown (Maksymalne obsunięcie kapitału)
+        #Obliczamy skumulowany zwrot
         cumulative_returns = (1 + self.df['Returns']).cumprod()
-        # Obliczamy najwyższy szczyt do tej pory (Running Max)
+        #Obliczamy najwyższy szczyt do tej pory (Running Max)
         running_max = cumulative_returns.cummax()
-        # Obliczamy obsunięcie (Drawdown)
+        #Obliczamy obsunięcie (Drawdown)
         drawdown = (cumulative_returns / running_max) - 1
-        # Wyciągamy najgorsze (minimalne) obsunięcie
+        #Wyciągamy najgorsze (minimalne) obsunięcie
         max_drawdown = drawdown.min()
 
         return {

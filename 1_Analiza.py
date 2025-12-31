@@ -7,15 +7,14 @@ from src.analyzer import StockAnalyzer
 st.set_page_config(page_title="Smart Portfolio Studio", layout="wide")
 st.title("📊 Smart Portfolio Studio - Analiza Akcji")
 
-# --- Panel boczny ---
+#Panel boczny
 st.sidebar.header("Opcje użytkownika")
 
-# --- Przycisk do odświeżania danych ---
+#Przycisk do odświeżania danych
 if st.sidebar.button("🔄 Odśwież dane",
                      help="Wymusza pobranie nowych danych z Yahoo Finance, ignorując zapisane pliki (cache)."):
     st.cache_data.clear()
     st.rerun()
-# -----------------------------------------------
 
 period = st.sidebar.selectbox(
     "Wybierz okres analizy",
@@ -31,7 +30,7 @@ interval = st.sidebar.selectbox(
     help="Jeden punkt na wykresie to: '1d' = jeden dzień, '1wk' = jeden tydzień. Dla długich okresów (np. 5 lat) warto wybrać '1wk'."
 )
 
-# --- Inteligentny Benchmark ---
+#Inteligentny Benchmark
 st.sidebar.markdown("### 🆚 Porównanie (Benchmark)")
 
 benchmarks_dict = {
@@ -61,7 +60,7 @@ if benchmark_ticker == "CUSTOM":
         help="Wpisz symbol zgodny z Yahoo Finance (np. 'KGH.WA' dla KGHM)."
     ).upper().strip()
 
-# --- Wybór Spółki ---
+#Wybór Spółki
 st.sidebar.header("🔍 Wybór Aktywa")
 
 default_tickers = ["AAPL", "NVDA", "MSFT", "TSLA", "BTC-USD", "ETH-USD", "CDPROJEKT.WA", "KGH.WA", "DNP.WA"]
@@ -90,14 +89,14 @@ ticker = custom_ticker if custom_ticker else selected_ticker_from_list
 
 st.sidebar.markdown(f"**Wybrano:** `{ticker}`")
 
-# --- Pobranie danych ---
+#Pobranie danych
 fetcher = StockData()
 df = fetcher.get_data(ticker, period=period, interval=interval)
 ticker_info = fetcher.get_ticker_info(ticker)
 currency = ticker_info.get("currency", "USD")
 
-# --- Eksport danych ---
-# Umieszczamy to TUTAJ, bo dopiero teraz mamy zmienną 'df' i 'ticker'
+#Eksport danych
+#Umieszczamy to TUTAJ, bo dopiero teraz mamy zmienną 'df' i 'ticker'
 if not df.empty:
     st.sidebar.markdown("---")
     st.sidebar.write("📥 **Eksport danych**")
@@ -118,14 +117,13 @@ if not df.empty:
         help="Pobierz tabelę z cenami historycznymi do pliku Excel/CSV."
     )
 
-# --- Stopka Autora ---
+#Stopka Autora
 st.sidebar.markdown("---")
 st.sidebar.markdown("### Autor")
 st.sidebar.info("**Adam Woźniak**")
-# Możesz tu też dodać link do LinkedIn lub GitHuba, jeśli chcesz:
-# st.sidebar.markdown("[GitHub](https://github.com/wozniakadam71) | [LinkedIn](https://www.linkedin.com/)")
+st.sidebar.markdown("[GitHub](https://github.com/wozniakadam71) | [LinkedIn](www.linkedin.com/in/adam-woźniak-b59473380)")
 
-# --- Panel Fundamentalny ---
+#Główny Panel
 st.markdown(f"### 🏢 {ticker_info.get('name', ticker)}")
 
 if ticker_info.get('website'):
@@ -134,7 +132,7 @@ if ticker_info.get('website'):
 
 fund_col1, fund_col2, fund_col3, fund_col4 = st.columns(4)
 
-# 1. Kapitalizacja
+#Kapitalizacja
 mcap = ticker_info.get('market_cap')
 if mcap:
     if mcap > 1e9:
@@ -146,12 +144,12 @@ if mcap:
 else:
     fund_col1.metric("Kapitalizacja", "---")
 
-# 2. Cena / Zysk (P/E)
+#Cena / Zysk (P/E)
 pe = ticker_info.get('pe_ratio')
 fund_col2.metric("Cena / Zysk (P/E)", f"{pe:.2f}" if pe else "---",
                  help="Price to Earnings. Mówi, ile dolarów/złotych inwestorzy płacą za 1 jednostkę zysku. Wysokie P/E (>25) może oznaczać, że spółka jest 'droga' lub dynamicznie rośnie. Niskie (<15) może oznaczać okazję.")
 
-# 3. Dywidenda
+#Dywidenda
 div = ticker_info.get('dividend_yield')
 div_str = "---"
 if div is not None:
@@ -162,7 +160,7 @@ if div is not None:
 fund_col3.metric("Dywidenda", div_str,
                  help="Roczna stopa zwrotu wypłacana akcjonariuszom w gotówce. Np. 5% oznacza, że za zainwestowane 100 zł otrzymasz 5 zł rocznie (brutto).")
 
-# 4. P/E Prognozowane
+#P/E Prognozowane
 f_pe = ticker_info.get('forward_pe')
 fund_col4.metric("Prognoza P/E", f"{f_pe:.2f}" if f_pe else "---",
                  help="Wskaźnik Cena/Zysk obliczony na podstawie przewidywanych zysków w przyszłym roku.")
@@ -173,7 +171,7 @@ if df.empty:
     st.warning("Brak danych dla wybranej spółki.")
     st.stop()
 
-# --- Analiza ---
+#Analiza
 analyzer = StockAnalyzer(df)
 analyzer.calculate_returns()
 analyzer.calculate_volatility()
@@ -181,7 +179,7 @@ analyzer.calculate_ema(short_window=12, long_window=26)
 analyzer.calculate_macd()
 analyzer.calculate_rsi()
 
-# --- Wyświetlanie statystyk ---
+#Wyświetlanie statystyk
 st.subheader(f"Statystyki dla {ticker}")
 stats = analyzer.basic_stats()
 
@@ -195,7 +193,7 @@ col3.metric("RSI (14)", f"{analyzer.rsi.iloc[-1]:.2f}",
 col4.metric("Zmienność", f"{analyzer.volatility:.4f}",
             help="Odchylenie standardowe zwrotów. Im wyższa liczba, tym bardziej 'szalony' jest kurs (duże ryzyko, ale i szansa na duży zysk).")
 
-# --- Wskaźniki Ryzyka ---
+#Wskaźniki Ryzyka
 try:
     risk = analyzer.get_risk_metrics()
 
@@ -216,10 +214,10 @@ try:
 except AttributeError:
     pass
 
-# --- Wykres cen z EMA ---
+#Wykres cen z EMA
 fig_price = go.Figure()
 
-# 1. Główna cena
+#Główna cena
 fig_price.add_trace(go.Scatter(
     x=df.index,
     y=df["Close"],
@@ -229,7 +227,7 @@ fig_price.add_trace(go.Scatter(
 ))
 
 if "EMA_short" in df.columns and "EMA_long" in df.columns:
-    # 2. EMA 12 (Szybka) - Złota/Pomarańczowa
+    #EMA 12 (Szybka)
     fig_price.add_trace(go.Scatter(
         x=df.index,
         y=df["EMA_short"],
@@ -238,7 +236,7 @@ if "EMA_short" in df.columns and "EMA_long" in df.columns:
         line=dict(dash='solid', color='orange', width=2)
     ))
 
-    # 3. EMA 26 (Wolna) - Fioletowa
+    #EMA 26 (Wolna)
     fig_price.add_trace(go.Scatter(
         x=df.index,
         y=df["EMA_long"],
@@ -263,7 +261,7 @@ with st.expander("ℹ️ Co to są linie EMA 12 i 26? (Kliknij, aby rozwinąć)"
     3.  **Przecięcia:** Gdy Pomarańczowa (12) przecina Fioletową (26) od dołu, jest to sygnał wzrostowy (często zwiastuje zmianę trendu).
     """)
 
-# --- Sekcja Porównania (Benchmark) ---
+#Sekcja Porównania
 if benchmark_ticker:
     st.markdown("---")
     st.subheader(f"🆚 Porównanie: {ticker} vs {benchmark_ticker}")
@@ -271,7 +269,7 @@ if benchmark_ticker:
     bench_df = fetcher.get_data(benchmark_ticker, period=period, interval=interval)
 
     if not bench_df.empty and len(bench_df) > 0:
-        # Normalizacja
+        #Normalizacja
         norm_main = df["Close"] / df["Close"].iloc[0] * 100
         norm_bench = bench_df["Close"] / bench_df["Close"].iloc[0] * 100
 
@@ -290,10 +288,10 @@ if benchmark_ticker:
     else:
         st.warning(f"Nie udało się pobrać danych dla {benchmark_ticker}. Może to błędny symbol?")
 
-# --- Wykres MACD ---
+#Wykres MACD
 fig_macd = go.Figure()
 if "MACD" in df.columns and "MACD_signal" in df.columns:
-    # 1. Linia MACD (Szybka) - Na Niebiesko
+    #Linia MACD (Szybka)
     fig_macd.add_trace(go.Scatter(
         x=df.index,
         y=df["MACD"],
@@ -302,7 +300,7 @@ if "MACD" in df.columns and "MACD_signal" in df.columns:
         line=dict(color="blue", width=2)
     ))
 
-    # 2. Linia Sygnału (Wolna) - Na Czerwono
+    #Linia Sygnału (Wolna)
     fig_macd.add_trace(go.Scatter(
         x=df.index,
         y=df["MACD_signal"],
@@ -325,19 +323,19 @@ if "MACD" in df.columns and "MACD_signal" in df.columns:
         2.  🔻 **SPRZEDAWAJ (Death Cross):** Gdy **Niebieska** przecina Czerwoną od góry i spada w dół. Oznacza to, że wzrosty słabną.
         """)
 
-# --- Wykres RSI ---
+#Wykres RSI
 fig_rsi = go.Figure()
 if "RSI" in df.columns:
     fig_rsi.add_trace(go.Scatter(x=df.index, y=df["RSI"], mode="lines", name="RSI"))
 
-    # Poziome linie
+    #Poziome linie
     fig_rsi.add_hline(y=70, line_dash="dash", line_color="red", annotation_text="Overbought (70)")
     fig_rsi.add_hline(y=30, line_dash="dash", line_color="green", annotation_text="Oversold (30)")
 
     fig_rsi.update_layout(title=f"RSI dla {ticker}", xaxis_title="Data", yaxis_title="RSI")
     st.plotly_chart(fig_rsi, use_container_width=True)
 
-# --- Symulator Inwestycji (Backtesting) ---
+#Symulator Inwestycji (Backtesting)
 st.markdown("---")
 st.subheader("💰 Symulator Inwestycji")
 
