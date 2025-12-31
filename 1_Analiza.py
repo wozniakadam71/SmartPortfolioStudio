@@ -121,7 +121,12 @@ if not df.empty:
 st.sidebar.markdown("---")
 st.sidebar.markdown("### Autor")
 st.sidebar.info("**Adam Woźniak**")
-st.sidebar.markdown("[GitHub](https://github.com/wozniakadam71) | [LinkedIn](www.linkedin.com/in/adam-woźniak-b59473380)")
+#Kolumny, żeby przyciski były obok siebie
+col_git, col_lin = st.sidebar.columns(2)
+with col_git:
+    st.link_button("GitHub", "https://github.com/wozniakadam71")
+with col_lin:
+    st.link_button("💼 LinkedIn", "www.linkedin.com/in/adam-woźniak-b59473380")
 
 #Główny Panel
 st.markdown(f"### 🏢 {ticker_info.get('name', ticker)}")
