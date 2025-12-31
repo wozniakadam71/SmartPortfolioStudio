@@ -96,7 +96,7 @@ df = fetcher.get_data(ticker, period=period, interval=interval)
 ticker_info = fetcher.get_ticker_info(ticker)
 currency = ticker_info.get("currency", "USD")
 
-# --- [NAPRAWIONE] Eksport danych ---
+# --- Eksport danych ---
 # Umieszczamy to TUTAJ, bo dopiero teraz mamy zmienną 'df' i 'ticker'
 if not df.empty:
     st.sidebar.markdown("---")
@@ -117,7 +117,13 @@ if not df.empty:
         mime="text/csv",
         help="Pobierz tabelę z cenami historycznymi do pliku Excel/CSV."
     )
-# ------------------------------------
+
+# --- Stopka Autora ---
+st.sidebar.markdown("---")
+st.sidebar.markdown("### Autor")
+st.sidebar.info("**Adam Woźniak**")
+# Możesz tu też dodać link do LinkedIn lub GitHuba, jeśli chcesz:
+# st.sidebar.markdown("[GitHub](https://github.com/wozniakadam71) | [LinkedIn](https://www.linkedin.com/)")
 
 # --- Panel Fundamentalny ---
 st.markdown(f"### 🏢 {ticker_info.get('name', ticker)}")
