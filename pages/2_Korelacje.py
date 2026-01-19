@@ -4,17 +4,17 @@ import plotly.express as px
 from src.data import StockData
 
 st.set_page_config(page_title="Macierz Korelacji", layout="wide")
-st.title("🔗 Macierz Korelacji Portfela")
+st.title("Macierz Korelacji Portfela")
 
 st.markdown("""
 Sprawdź, czy Twój portfel jest dobrze zdywersyfikowany.
 Wpisz swoje spółki w panelu bocznym lub wybierz z listy popularnych.
 """)
 
-# Panel Boczny: Konfiguracja
+#Panel Boczny - konfiguracja
 st.sidebar.header("Ustawienia Macierzy")
 
-# 1. Lista popularnych (dla wygody)
+#Lista popularnych instrumentow
 popular_tickers = [
     "BTC-USD", "ETH-USD", "SPY", "QQQ", "GLD",
     "NVDA", "TSLA", "MSFT", "AAPL", "GOOGL",
@@ -27,7 +27,7 @@ selected_from_list = st.sidebar.multiselect(
     default=["BTC-USD", "SPY", "GLD"]  # Domyślny startowy zestaw
 )
 
-# 2. Pole na własne spółki
+#Pole na własne instrumenty
 st.sidebar.markdown("---")
 manual_tickers_input = st.sidebar.text_area(
     "Lub wpisz własne (oddzielone przecinkiem):",
@@ -41,58 +41,57 @@ manual_tickers = []
 if manual_tickers_input:
     manual_tickers = [x.strip().upper() for x in manual_tickers_input.split(",") if x.strip()]
 
-# Łączenie obu list i usuwanie duplikatów (set)
+#Laczenie obu list i usuwanie duplikatów
 final_ticker_list = list(set(selected_from_list + manual_tickers))
 
 st.sidebar.markdown(f"**Wybrano łącznie:** {len(final_ticker_list)} aktywów")
 
-# 3. Wybór okresu
+#Wybor okresu
 period = st.sidebar.selectbox(
     "Okres danych:",
     options=["3mo", "6mo", "1y", "2y", "5y"],
     index=2
 )
 
-# Zabezpieczenie: musi być min. 2 spółki
+#Zabezpieczenie (min 2 spolki zeby mozliwe bylo zrobienie macierzy)
 if len(final_ticker_list) < 2:
-    st.info("👈 Wybierz lub wpisz przynajmniej dwie spółki w panelu bocznym, aby zobaczyć korelację.")
+    st.info("Wybierz lub wpisz przynajmniej dwie spółki w panelu bocznym, aby zobaczyć korelację.")
     st.stop()
 
-# Pobieranie i Przetwarzanie Danych
-if st.button("Oblicz Korelację 🚀"):
+#Pobieranie i przetwarzanie danych
+if st.button("Oblicz Korelację"):
     fetcher = StockData()
     combined_df = pd.DataFrame()
-
     progress_bar = st.progress(0)
 
     with st.spinner("Pobieranie danych..."):
         for i, ticker in enumerate(final_ticker_list):
-            # Pobieramy dane
+            #Pobieranie danych
             df = fetcher.get_data(ticker, period=period, interval="1d")
 
             if not df.empty and "Close" in df.columns:
-                # Obliczamy dzienne zwroty procentowe
+                #Obliczanie dziennych zwrotów procentowych
                 combined_df[ticker] = df["Close"].pct_change()
 
-            # Aktualizacja paska postępu
+            #Aktualizacja paska postępu
             progress_bar.progress((i + 1) / len(final_ticker_list))
 
-    # Usuwamy pierwszy wiersz (NaN po pct_change)
+    #Usuwanie brakow w wierszach (NaN po pct_change) (np swieto w jednym kraju przez co gielda jest zamknieta)
     combined_df = combined_df.dropna()
 
     if combined_df.empty:
         st.error("Nie udało się pobrać wystarczających danych. Sprawdź, czy wpisane symbole są poprawne.")
     else:
-        #Obliczanie Korelacji
+        #Obliczanie Korelacji (metoda Pearsona)
         corr_matrix = combined_df.corr()
 
         #Wizualizacja (Plotly)
         fig = px.imshow(
             corr_matrix,
-            text_auto=".2f",
+            text_auto=".2f", #Wartosci liczbowe na kafelkach
             aspect="auto",
             color_continuous_scale="RdBu_r",  # Czerwony (1.0) - Niebieski (-1.0)
-            zmin=-1, zmax=1,
+            zmin=-1, zmax=1, #Sztywne ramy od -1 do 1
             title=f"Korelacja portfela ({period})"
         )
 
@@ -105,25 +104,26 @@ if st.button("Oblicz Korelację 🚀"):
         st.plotly_chart(fig, use_container_width=True)
 
         #Wnioski
-        st.subheader("💡 Wnioski:")
+        st.subheader("Wnioski:")
 
         #Najsilniejsza para
-        c = corr_matrix.abs()
+        c = corr_matrix.abs() #Wartosc bezwgzgledna (sama sila zwiazku)
         #Wypełnienie przekątnej zerami, żeby nie znajdowało korelacji 1.0 samej ze sobą
         for col in c.columns:
             c.loc[col, col] = 0
 
-        s = c.unstack()
+        s = c.unstack() #Zamiana macierzy w liste par
         so = s.sort_values(kind="quicksort", ascending=False)
 
+        #Wyswietlanie topowego wyniku
         if not so.empty:
-            top_pair = so.index[0]
+            top_pair = so.index[0] #Nazwy najlepszej pary
             top_val = corr_matrix.loc[top_pair[0], top_pair[1]]  #Pobieranie oryginalnej wartości (+/-)
 
             st.info(f"Najsilniejsze powiązanie: **{top_pair[0]}** i **{top_pair[1]}** (Korelacja: {top_val:.2f}).")
 
             if top_val > 0.8:
                 st.warning(
-                    "⚠️ **Wysokie ryzyko koncentracji!** Te dwa aktywa chodzą niemal identycznie. Jeśli jedno spadnie, drugie prawdopodobnie też.")
+                    "**Wysokie ryzyko koncentracji!** Te dwa aktywa są od siebie bardzo zależne. Jeśli jedno spadnie, drugie prawdopodobnie też.")
             elif top_val < 0.2 and top_val > -0.2:
-                st.success("✅ Znaleziono aktywa nieskorelowane. To dobrze wpływa na bezpieczeństwo portfela.")
+                st.success("Znaleziono aktywa nieskorelowane. To dobrze wpływa na bezpieczeństwo portfela.")

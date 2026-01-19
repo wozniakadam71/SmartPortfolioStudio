@@ -8,8 +8,10 @@ class StockData:
     """
     def __init__(self):
         pass
+
+    #"@" Zapobiega blokowaniu aplikacji przez limity API i przyspiesza działanie, ttl="24h" - że dane są ważne przez dobę.
     @st.cache_data(ttl="24h")
-    def get_data(_self, ticker, period="1y", interval="1d"):
+    def get_data(_self, ticker, period="1y", interval="1d"): #"_self" przez charakterystyke Streamlita
         """
         Pobiera historyczne dane dla podanego tickera.
         Używa cache Streamlit, aby nie pobierać tego samego wielokrotnie.
@@ -19,21 +21,21 @@ class StockData:
             #Pobieranie danych z Yahoo Finance
             df = yf.download(ticker, period=period, interval=interval, progress=False)
 
+            #Sprawdzenie czy API dziala
             if df.empty:
                 return pd.DataFrame()
 
-            #CZYSZCZENIE DANYCH
-            #Naprawa nazw kolumn (czasem yfinance zwraca dziwne nagłówki w nowych wersjach)
-            if isinstance(df.columns, pd.MultiIndex):
+            #Naprawa nazw kolumn
+            if isinstance(df.columns, pd.MultiIndex): #Czy wymaga naprawy
                 #Spłaszczanie nagłówków jeśli są wielopoziomowe
                 df.columns = df.columns.get_level_values(0)
             #Usuwanie strefy czasowej z daty (dla wykresów)
             if df.index.tzinfo is not None:
                 df.index = df.index.tz_localize(None)
-
             return df
 
         except Exception as e:
+            #Blad
             st.error(f"Wystąpił błąd podczas pobierania danych dla {ticker}: {e}")
             return pd.DataFrame()
 
@@ -45,7 +47,7 @@ class StockData:
             t = yf.Ticker(ticker)
             info = t.info
 
-            #Pobieranie danych z bezpiecznymi wartościami domyślnymi
+            #Pobieranie danych z bezpiecznymi wartościami domyślnymi, zapobieganie bledom KeyError
             return {
                 "name": info.get("shortName", ticker),
                 "currency": info.get("currency", "USD"),

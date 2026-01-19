@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from src.data import StockData
 
 st.set_page_config(page_title="Symulacja", layout="wide")
-st.title("🎲 Symulator Przyszłości")
+st.title("Symulator Przyszłości (oparty na statystyce!)")
 
 st.markdown("""
 Ta symulacja generuje **potencjalne ścieżki ceny** w przyszłości, bazując na historycznej zmienności (ryzyku) i średnim zwrocie danej spółki.
@@ -36,10 +36,10 @@ if hist_data.empty:
 log_returns = np.log(1 + hist_data["Close"].pct_change())
 
 #Średnia (u) i wariancja (var)
-u = log_returns.mean()
-var = log_returns.var()
+u = log_returns.mean() #Sredni dzienny zwrot
+var = log_returns.var() #Wariancja
 
-#Dryf (Drift)
+#Dryf (Drift) (kierunek)
 drift = u - (0.5 * var)
 
 #Zmienna losowa (Odchylenie standardowe)
@@ -51,17 +51,20 @@ simulation_df = pd.DataFrame()
 #Ostatnia znana cena
 last_price = hist_data["Close"].iloc[-1]
 
-if st.button("Uruchom Symulację 🚀"):
+if st.button("Uruchom Symulację"):
 
     with st.spinner("Generowanie alternatywnych wszechświatów..."):
 
+        #Generowanie losowej liczby z rozkładu normalnego (macierz: dni x liczba symulacji)
         daily_volatility = stdev * np.random.normal(size=(days_to_predict, num_simulations))
+        #Wzór na przyszłą cenę: exp(dryf + losowa_zmienność)
         daily_returns = np.exp(drift + daily_volatility)
 
         #Ścieżki cen
         price_paths = np.zeros((days_to_predict + 1, num_simulations))
         price_paths[0] = last_price
 
+        #Petla z procentem skladanym
         for t in range(1, days_to_predict + 1):
             price_paths[t] = price_paths[t - 1] * daily_returns[t - 1]
 
@@ -70,16 +73,16 @@ if st.button("Uruchom Symulację 🚀"):
     #Wykres
     fig = go.Figure()
 
-    #Rysowanie każdeh ścieżki
+    #Rysowanie kazdej sciezki
     limit_lines = min(num_simulations, 100)
 
     for i in range(limit_lines):
         fig.add_trace(go.Scatter(
             y=simulation_df[i],
             mode='lines',
-            line=dict(width=1, color='rgba(100, 100, 255, 0.2)'),
+            line=dict(width=1, color='rgba(100, 100, 255, 0.2)'), #Polprzezroczystosc
             showlegend=False,
-            hoverinfo='skip'
+            hoverinfo='skip' #Wylaczanie dymkow tla
         ))
 
     #Linia średnia
@@ -109,7 +112,7 @@ if st.button("Uruchom Symulację 🚀"):
     st.plotly_chart(fig, use_container_width=True)
 
     #Podsumowanie statystyczne
-    st.subheader("📊 Analiza Ryzyka")
+    st.subheader("Analiza Ryzyka")
 
     final_prices = simulation_df.iloc[-1]
 
@@ -119,4 +122,4 @@ if st.button("Uruchom Symulację 🚀"):
     col3.metric("Optymistyczny", f"{np.percentile(final_prices, 95):.2f}")
 
     st.info(
-        "Pamiętaj: Model zakłada, że przyszłość będzie zachowywać się statystycznie podobnie do przeszłości. 'Czarne Łabędzie' nie są tu uwzględnione!")
+        """**Pamiętaj**: Model zakłada, że przyszłość będzie zachowywać się statystycznie podobnie do przeszłości. Model sugeruje, że z 90% prawdopodobieństwem cena za wybraną liczbę dni znajdzie się w przedziale między "Scenariuszem Pesymistycznym" a "Optymistycznym".""")
