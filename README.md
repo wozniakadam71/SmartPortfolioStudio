@@ -1,4 +1,4 @@
-# Smart Portfolio Studio 📈
+# Smart Portfolio Studio
 
 Aplikacja webowa do analizy fundamentalnej i technicznej rynków finansowych, stworzona w języku Python.
 
