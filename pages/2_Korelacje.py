@@ -127,3 +127,15 @@ if st.button("Oblicz Korelację"):
                     "**Wysokie ryzyko koncentracji!** Te dwa aktywa są od siebie bardzo zależne. Jeśli jedno spadnie, drugie prawdopodobnie też.")
             elif top_val < 0.2 and top_val > -0.2:
                 st.success("Znaleziono aktywa nieskorelowane. To dobrze wpływa na bezpieczeństwo portfela.")
+#Disclaimer
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: gray; font-size: small;'>
+        <b>Nota prawna:</b> Aplikacja służy wyłącznie celom edukacyjnym i informacyjnym. 
+        Prezentowane dane nie stanowią porady inwestycyjnej ani rekomendacji w rozumieniu przepisów prawa. 
+        Pamiętaj, że inwestowanie wiąże się z ryzykiem utraty kapitału.
+    </div>
+    """,
+    unsafe_allow_html=True
+)

@@ -123,3 +123,15 @@ if st.button("Uruchom Symulację"):
 
     st.info(
         """**Pamiętaj**: Model zakłada, że przyszłość będzie zachowywać się statystycznie podobnie do przeszłości. Model sugeruje, że z 90% prawdopodobieństwem cena za wybraną liczbę dni znajdzie się w przedziale między "Scenariuszem Pesymistycznym" a "Optymistycznym".""")
+#Disclaimer
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: gray; font-size: small;'>
+        <b>Nota prawna:</b> Aplikacja służy wyłącznie celom edukacyjnym i informacyjnym. 
+        Prezentowane dane nie stanowią porady inwestycyjnej ani rekomendacji w rozumieniu przepisów prawa. 
+        Pamiętaj, że inwestowanie wiąże się z ryzykiem utraty kapitału.
+    </div>
+    """,
+    unsafe_allow_html=True
+)

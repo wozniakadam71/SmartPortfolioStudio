@@ -433,3 +433,15 @@ with col_sim2:
                 f"Gdybyś kupił **{res['shares']:.4f}** akcji w dniu **{res['start_date'].strftime('%Y-%m-%d')}** "
                 f"po cenie **{res['start_price']:.2f} {currency}**, dzisiaj miałbyś powyższą kwotę."
             )
+#Disclaimer
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align: center; color: gray; font-size: small;'>
+        <b>Nota prawna:</b> Aplikacja służy wyłącznie celom edukacyjnym i informacyjnym. 
+        Prezentowane dane nie stanowią porady inwestycyjnej ani rekomendacji w rozumieniu przepisów prawa. 
+        Pamiętaj, że inwestowanie wiąże się z ryzykiem utraty kapitału.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
