@@ -59,7 +59,7 @@ selected_ticker_from_list = st.sidebar.selectbox(
 custom_ticker = st.sidebar.text_input(
     "Lub wpisz symbol ręcznie:",
     placeholder="np. BTC-USD, PKO.WA, GLD",
-    help="Wpisz ticker. Dla Polski dodaj końcówkę .WA (np. PKO.WA, CDR.WA). Krypto: BTC-USD."
+    help="Wpisz ticker. Dla Polski dodaj końcówkę .WA (np. PKO.WA, CDR.WA). Krypto: BTC-USD. Musi byc on zgodny z YFinance"
 ).upper().strip()
 
 #Zapisanie wybranego tickera (z list albo customowego) w konkretnej zmiennej
