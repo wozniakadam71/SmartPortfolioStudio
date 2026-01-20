@@ -48,3 +48,4 @@ streamlit run 1_Analiza.py
 ```
 ---
 *Projekt zrealizowany przy wsparciu sztucznej inteligencji (Google Gemini)
+**Aplikacji NIE NALEŻY traktować jako formę porady inwestycyjnej. Jest ona oparta o przedstawienie danych i wskaźników statystycznych danego instrumentu giełdowego.
